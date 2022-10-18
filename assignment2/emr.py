@@ -32,10 +32,10 @@ class Patient:
             self.__patient_id = str(uuid.uuid4())
             try:
                 with con.cursor() as cur:
-                    qry = 'INSERT INTO patient (patient_id, fname, lname)'
-                    qry = qry + 'VALUES(%s, %s, %s)'
+                    qry = 'INSERT INTO patient (patient_id, fname, lname, age)'
+                    qry = qry + 'VALUES(%s, %s, %s, %s)'
                     print(qry)
-                    cur.execute(qry, (self.__patient_id, self.__fname, self.__lname)) 
+                    cur.execute(qry, (self.__patient_id, self.__fname, self.__lname, self.__age)) 
                     con.commit()
             finally:
                 con.close()
@@ -65,10 +65,11 @@ class Patient:
         return self.__age
     #set
     def updatefname(self,text):
+        config = Config()
+        con = config.db_conn
         try: 
-
             with con.cursor() as cur:
-                qry = 'UPDATE books SET fname = %s WHERE book_id = %s'
+                qry = 'UPDATE books SET fname = %s WHERE patient_id = %s'
 
                 cur.execute(qry, (text, self.__patient_id)) 
                 con.commit()
@@ -77,10 +78,12 @@ class Patient:
 
             con.close()
     def updatelname(self,text):
+        config = Config()
+        con = config.db_conn
         try: 
 
             with con.cursor() as cur:
-                qry = 'UPDATE books SET lname = %s WHERE book_id = %s'
+                qry = 'UPDATE books SET lname = %s WHERE patient_id = %s'
 
                 cur.execute(qry, (text, self.__patient_id)) 
                 con.commit()
@@ -89,10 +92,12 @@ class Patient:
 
             con.close()
     def updateAge(self,num):
+        config = Config()
+        con = config.db_conn
         try: 
 
             with con.cursor() as cur:
-                qry = 'UPDATE books SET age = %s WHERE book_id = %s'
+                qry = 'UPDATE books SET age = %s WHERE patient_id = %s'
 
                 cur.execute(qry, (num, self.__patient_id)) 
                 con.commit()
@@ -101,6 +106,8 @@ class Patient:
 
             con.close()
     def delete(self):
+        config = Config()
+        con = config.db_conn
         try: 
             with con.cursor() as cur:
                 qry = 'DELETE FROM patient WHERE patient_id = %s'
@@ -132,10 +139,10 @@ class Doctor:
                 self.__doctor_id = str(uuid.uuid4())
                 try:
                     with con.cursor() as cur:
-                        qry = 'INSERT INTO doctor (doctor_id, fname, lname)'
-                        qry = qry + 'VALUES(%s, %s, %s)'
+                        qry = 'INSERT INTO doctor (doctor_id, fname, lname, age)'
+                        qry = qry + 'VALUES(%s, %s, %s, %s)'
                         print(qry)
-                        cur.execute(qry, (self.__doctor_id, self.__fname, self.__lname)) 
+                        cur.execute(qry, (self.__doctor_id, self.__fname, self.__lname, self.__age)) 
                         con.commit()
                 finally:
                     con.close()
@@ -152,6 +159,7 @@ class Doctor:
                             self.__doctor_id = row["doctor_id"]
                             self.__fname = row["first_name"]
                             self.__lname = row["last_name"]
+                            self.__age = row["age"]
                 finally:
                     con.close()
         #Read
@@ -165,10 +173,12 @@ class Doctor:
         return self.__age
     #set
     def updatefname(self,text):
+        config = Config()
+        con = config.db_conn
         try: 
 
             with con.cursor() as cur:
-                qry = 'UPDATE books SET fname = %s WHERE book_id = %s'
+                qry = 'UPDATE books SET fname = %s WHERE doctor_id = %s'
 
                 cur.execute(qry, (text, self.__patient_id)) 
                 con.commit()
@@ -177,10 +187,12 @@ class Doctor:
 
             con.close()
     def updatelname(self,text):
+        config = Config()
+        con = config.db_conn
         try: 
 
             with con.cursor() as cur:
-                qry = 'UPDATE books SET lname = %s WHERE book_id = %s'
+                qry = 'UPDATE books SET lname = %s WHERE doctor_id = %s'
 
                 cur.execute(qry, (text, self.__patient_id)) 
                 con.commit()
@@ -189,10 +201,12 @@ class Doctor:
 
             con.close()
     def updateAge(self,num):
+        config = Config()
+        con = config.db_conn
         try: 
 
             with con.cursor() as cur:
-                qry = 'UPDATE books SET age = %s WHERE book_id = %s'
+                qry = 'UPDATE books SET age = %s WHERE doctor_id = %s'
 
                 cur.execute(qry, (num, self.__patient_id)) 
                 con.commit()
@@ -202,6 +216,8 @@ class Doctor:
             con.close()
 
     def delete(self):
+        config = Config()
+        con = config.db_conn
         try: 
             with con.cursor() as cur:
                 qry = 'DELETE FROM doctor WHERE doctor_id = %s'
@@ -226,14 +242,16 @@ class Visit:
         self.__fk_doctor_id = fk_doctor_id
         self.__successful = successful
         self.__refferal_name = refferal_name
+        config = Config()
+        con = config.db_conn
         if visit_id == "":
                 self.__visit_id = str(uuid.uuid4())
                 try:
                     with con.cursor() as cur:
                         qry = 'INSERT INTO visit (visit_id,fk_patient_id,fk_doctor_id,successful,refferal_name)'
-                        qry = qry + 'VALUES(%s, %s, %s)'
+                        qry = qry + 'VALUES(%s, %s, %s,%s,%s)'
                         print(qry)
-                        cur.execute(qry, (self.__visit_id,self.__fk_patient_id,self.__fk_doctor_id,successful,refferal_name)) 
+                        cur.execute(qry, (self.__visit_id,self.__fk_patient_id,self.__fk_doctor_id,self.__successful,self.__refferal_name)) 
                         con.commit()
                 finally:
                     con.close()
@@ -265,6 +283,8 @@ class Visit:
         return self.__refferal_name
     #update
     def updateSuccessful(self,result):
+        config = Config()
+        con = config.db_conn
         try: 
 
             with con.cursor() as cur:
@@ -277,6 +297,8 @@ class Visit:
 
             con.close()
     def updateRefferalName(self,name):
+        config = Config()
+        con = config.db_conn
         try: 
 
             with con.cursor() as cur:
@@ -289,6 +311,8 @@ class Visit:
 
             con.close()
     def delete(self):
+        config = Config()
+        con = config.db_conn
         try: 
             with con.cursor() as cur:
                 qry = 'DELETE FROM visit WHERE visit_id = %s'
@@ -345,8 +369,9 @@ class Diagnosis:
     def getEmergency(self):
         return self.__emergency
     def updateName(self,name):
+        config = Config()
+        con = config.db_conn
         try: 
-
             with con.cursor() as cur:
                 qry = 'UPDATE dianosis SET name = %s WHERE diagnosis_id = %s'
 
@@ -354,9 +379,10 @@ class Diagnosis:
                 con.commit()
 
         finally:
-
             con.close()
     def updateEmergency(self, val):
+        config = Config()
+        con = config.db_conn
         try: 
 
             with con.cursor() as cur:
@@ -369,6 +395,8 @@ class Diagnosis:
 
             con.close()
     def delete(self):
+        config = Config()
+        con = config.db_conn
         try: 
             with con.cursor() as cur:
                 qry = 'DELETE FROM diagnosis WHERE diagnosis_id = %s'
@@ -423,6 +451,8 @@ class Procedure:
     def getprice(self):
         return self.__price
     def updateName(self,name):
+        config = Config()
+        con = config.db_conn
         try: 
 
             with con.cursor() as cur:
@@ -435,6 +465,8 @@ class Procedure:
 
             con.close()
     def updateprice(self, val):
+        config = Config()
+        con = config.db_conn
         try: 
 
             with con.cursor() as cur:
@@ -447,6 +479,8 @@ class Procedure:
 
             con.close()
     def delete(self):
+        config = Config()
+        con = config.db_conn
         try: 
             with con.cursor() as cur:
                 qry = 'DELETE FROM procedure WHERE procedure_id = %s'
