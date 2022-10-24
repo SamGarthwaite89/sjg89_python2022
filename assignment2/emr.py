@@ -15,7 +15,7 @@ class Config:
                              user="sjg89",
                              port=3306,
                              password="InfSci1500_4336514",
-                             db="python_assignment",
+                             db="sjg89",
                              charset="utf8mb4",
                              cursorclass=pymysql.cursors.DictCursor)
 
@@ -30,6 +30,7 @@ class Patient:
         con = config.db_conn
         if patient_id == "":
             self.__patient_id = str(uuid.uuid4())
+            print(self.__patient_id)
             try:
                 with con.cursor() as cur:
                     qry = 'INSERT INTO patient (patient_id, fname, lname, age)'
@@ -44,14 +45,14 @@ class Patient:
             self.__patient_id = patient_id
             try:
                 with con.cursor() as cur:
-                    qry = "SELECT * FROM patient WHERE patient_id = '" + self.patient_id + "'"
+                    qry = "SELECT * FROM patient WHERE patient_id = '" + self.__patient_id + "'"
                     print(qry)
                     cur.execute(qry)
                     rows = cur.fetchall()
                     for row in rows:
                         self.__patient_id = row["patient_id"]
-                        self.__fname = row["first_name"]
-                        self.__lname = row["last_name"]
+                        self.__fname = row["fname"]
+                        self.__lname = row["lname"]
             finally:
                 con.close()
         #Read
@@ -66,10 +67,11 @@ class Patient:
     #set
     def updatefname(self,text):
         config = Config()
+        self.__fname = text
         con = config.db_conn
         try: 
             with con.cursor() as cur:
-                qry = 'UPDATE books SET fname = %s WHERE patient_id = %s'
+                qry = 'UPDATE patient SET fname = %s WHERE patient_id = %s'
 
                 cur.execute(qry, (text, self.__patient_id)) 
                 con.commit()
@@ -78,12 +80,13 @@ class Patient:
 
             con.close()
     def updatelname(self,text):
+        self.__lname = text
         config = Config()
         con = config.db_conn
         try: 
 
             with con.cursor() as cur:
-                qry = 'UPDATE books SET lname = %s WHERE patient_id = %s'
+                qry = 'UPDATE patient SET lname = %s WHERE patient_id = %s'
 
                 cur.execute(qry, (text, self.__patient_id)) 
                 con.commit()
@@ -92,12 +95,13 @@ class Patient:
 
             con.close()
     def updateAge(self,num):
+        self.__age = num
         config = Config()
         con = config.db_conn
         try: 
 
             with con.cursor() as cur:
-                qry = 'UPDATE books SET age = %s WHERE patient_id = %s'
+                qry = 'UPDATE patient SET age = %s WHERE patient_id = %s'
 
                 cur.execute(qry, (num, self.__patient_id)) 
                 con.commit()
@@ -163,7 +167,7 @@ class Doctor:
                 finally:
                     con.close()
         #Read
-    def getPatientId(self):
+    def getDoctorId(self):
         return self.__doctor_id
     def getfname(self):
         return self.__fname
@@ -173,26 +177,28 @@ class Doctor:
         return self.__age
     #set
     def updatefname(self,text):
+        self.__fname = text
         config = Config()
         con = config.db_conn
         try: 
 
             with con.cursor() as cur:
-                qry = 'UPDATE books SET fname = %s WHERE doctor_id = %s'
+                qry = 'UPDATE doctor SET fname = %s WHERE doctor_id = %s'
 
-                cur.execute(qry, (text, self.__patient_id)) 
+                cur.execute(qry, (text, self.__doctor_id)) 
                 con.commit()
 
         finally:
 
             con.close()
     def updatelname(self,text):
+        self.__lname = text
         config = Config()
         con = config.db_conn
         try: 
 
             with con.cursor() as cur:
-                qry = 'UPDATE books SET lname = %s WHERE doctor_id = %s'
+                qry = 'UPDATE doctor SET lname = %s WHERE doctor_id = %s'
 
                 cur.execute(qry, (text, self.__patient_id)) 
                 con.commit()
@@ -201,12 +207,13 @@ class Doctor:
 
             con.close()
     def updateAge(self,num):
+        self.__age = num
         config = Config()
         con = config.db_conn
         try: 
 
             with con.cursor() as cur:
-                qry = 'UPDATE books SET age = %s WHERE doctor_id = %s'
+                qry = 'UPDATE doctor SET age = %s WHERE doctor_id = %s'
 
                 cur.execute(qry, (num, self.__patient_id)) 
                 con.commit()
@@ -283,6 +290,7 @@ class Visit:
         return self.__refferal_name
     #update
     def updateSuccessful(self,result):
+        self._successful = result
         config = Config()
         con = config.db_conn
         try: 
@@ -297,6 +305,7 @@ class Visit:
 
             con.close()
     def updateRefferalName(self,name):
+        self.__refferal_name = name
         config = Config()
         con = config.db_conn
         try: 
@@ -341,7 +350,7 @@ class Diagnosis:
             self.__diagnosis_id = str(uuid.uuid4())
             try:
                 with con.cursor() as cur:
-                    qry = 'INSERT INTO diagnosis (dianosis_id, name, emergency)'
+                    qry = 'INSERT INTO diagnosis (diagnosis_id, name, emergency)'
                     qry = qry + 'VALUES(%s, %s, %s)'
                     print(qry)
                     cur.execute(qry, (self.__diagnosis_id, self.__name, self.__emergency)) 
@@ -369,11 +378,12 @@ class Diagnosis:
     def getEmergency(self):
         return self.__emergency
     def updateName(self,name):
+        self.__name = name
         config = Config()
         con = config.db_conn
         try: 
             with con.cursor() as cur:
-                qry = 'UPDATE dianosis SET name = %s WHERE diagnosis_id = %s'
+                qry = 'UPDATE diagnosis SET name = %s WHERE diagnosis_id = %s'
 
                 cur.execute(qry, (self.__name, self.__diagnosis_id)) 
                 con.commit()
@@ -381,6 +391,7 @@ class Diagnosis:
         finally:
             con.close()
     def updateEmergency(self, val):
+        self.__emergency = val
         config = Config()
         con = config.db_conn
         try: 
@@ -423,7 +434,7 @@ class Procedure:
             self.__procedure_id = str(uuid.uuid4())
             try:
                 with con.cursor() as cur:
-                    qry = 'INSERT INTO procedure (dianosis_id, name, price)'
+                    qry = 'INSERT INTO procedure (procedure_id, name, price)'
                     qry = qry + 'VALUES(%s, %s, %s)'
                     print(qry)
                     cur.execute(qry, (self.__procedure_id, self.__name, self.__price)) 
@@ -451,6 +462,7 @@ class Procedure:
     def getprice(self):
         return self.__price
     def updateName(self,name):
+        self.__name = name
         config = Config()
         con = config.db_conn
         try: 
@@ -465,6 +477,7 @@ class Procedure:
 
             con.close()
     def updateprice(self, val):
+        self.__price = val
         config = Config()
         con = config.db_conn
         try: 
@@ -494,6 +507,6 @@ class Procedure:
         fields_data = {
             "procedure_id" : self.__procedure_id,
             "name" : self.__name,
-            "price" : self.__price,
+            "price" : self.__price
         }
         return json.dumps(fields_data)
