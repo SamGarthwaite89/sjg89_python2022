@@ -1,7 +1,10 @@
 import uuid
 import json
-import pymysql.cursors
+
+from flask import Flask
+
 import unittest
+import pymysql.cursors
 
 class Config:
     '''iniciates the sql connection'''
@@ -539,14 +542,22 @@ class Testing(unittest.TestCase):
         self.assertEqual(testDoc.get_fname(),"jim")
         self.assertEqual(testDoc.get_lname(),"bob")
 #Delete an existing doctor entry
-    #def testDelete(self):
-        #ask dimitri idk how to test 
-#Make sure that your unit tests are executable → make sure to call unittest.main()
+    def testDelete(self):
+        testDoc = Doctor("firstname","lastname",1,"vhkfd")
+        testDoc.delete()
+        config = Config()
+        con = config.db_conn
+        with con.cursor() as cur:
+            qry="SELECT * FROM doctor WHERE doctor_id = '"+ testDoc.get_doctor_id() + "'"
+            print(qry)
+            cur.execute(qry)
+            result = False
+            if cur == None:
+                result = True
+            self.assertEqual(result, True)
 
-#if __name__ == '__main__':
-#    unittest.main()
-
-from flask import Flask
+if __name__ == '__main__':
+    unittest.main()
 
 
 app = Flask(__name__)
@@ -557,5 +568,12 @@ def index():
     doctor = Doctor("Mx", "Doctor", 54)
     visit1 = Visit(patient.get_patient_id(),doctor.get_doctor_id(),False,"Ms Refferal")
     visit2 = Visit(patient.get_patient_id(),doctor.get_doctor_id(),True, "None")
-    value = "" + patient.to_json() + doctor.to_json(), visit1.to_json(), visit2.to_json()
-    return value
+    result = {
+        "patient" : patient.to_json(),
+        "doctor" : doctor.to_json(),
+        "visits" : [
+            visit1.to_json(), visit2.to_json()
+        ]
+    }
+    return json.dumps(result)
+
